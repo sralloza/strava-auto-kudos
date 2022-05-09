@@ -122,10 +122,10 @@ public class ActivityBuilder {
 
     private boolean buildHasKudo(WebElement webElement) {
         var kudosBtn = getKudoButton(webElement);
-        var giveKudosTitle = config.getTitle("giveKudos");
+        var viewKudosTitle = config.getTitle("viewKudos");
         String kudosBtnTitle = kudosBtn.getAttribute("title");
-        boolean hasKudo = !giveKudosTitle.equalsIgnoreCase(kudosBtnTitle);
-        log.debug("Kudos button title: '{}', received '{}', result {}", giveKudosTitle, kudosBtnTitle, hasKudo);
+        boolean hasKudo = viewKudosTitle.equalsIgnoreCase(kudosBtnTitle);
+        log.debug("Kudos button title: '{}', received '{}', result {}", viewKudosTitle, kudosBtnTitle, hasKudo);
         return hasKudo;
     }
 

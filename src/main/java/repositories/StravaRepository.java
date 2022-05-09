@@ -69,6 +69,7 @@ public class StravaRepository {
 
     public void logout() {
         log.info("Logging out from Strava");
+        driver.navigate().refresh();
         List<WebElement> dropdownMenus = driver.findElements(config.getCssSelector("accountDropdown"));
         WebElement accountMenu = dropdownMenus.get(dropdownMenus.size() - 1);
         scrollToElement(accountMenu);
@@ -90,7 +91,12 @@ public class StravaRepository {
     }
 
     private void scrollToElement(WebElement element) {
-        runJavascript("arguments[0].scrollIntoView(true);", element);
+        String scrollElementIntoMiddle = "var viewPortHeight = Math.max(document.documentElement.clientHeight, " +
+                "window.innerHeight || 0);"
+                + "var elementTop = arguments[0].getBoundingClientRect().top;"
+                + "window.scrollBy(0, elementTop-(viewPortHeight/2));";
+
+        runJavascript(scrollElementIntoMiddle, element);
         waitPageLoads();
     }
 
@@ -107,6 +113,13 @@ public class StravaRepository {
                 webDriver -> runJavascript("return document.readyState").equals("complete"));
     }
 
+    private void simpleWaiter() {
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException ignored) {
+        }
+    }
+
     private Object runJavascript(String script, Object... args) {
         return ((JavascriptExecutor) driver).executeScript(script, args);
     }
@@ -114,7 +127,9 @@ public class StravaRepository {
     public List<Activity> getActivities() {
         Integer feedSize = config.getInt("strava.feedSize");
         if (feedSize > 0) {
-            driver.get("https://www.strava.com/dashboard/following/" + feedSize);
+            String newUrl = "https://www.strava.com/dashboard/following/" + feedSize;
+            log.debug("Opening new url: {}", newUrl);
+            driver.get(newUrl);
             waitPageLoads();
         }
 
@@ -137,8 +152,12 @@ public class StravaRepository {
             log.info("dryRun is enabled, skipping kudo");
             return;
         }
-        scrollToElement(activity.getKudoButton());
-        activity.getKudoButton().click();
+        WebElement kudoButton = activity.getKudoButton();
+        scrollToElement(kudoButton);
+        simpleWaiter();
+
+        kudoButton.click();
         waitPageLoads();
+        log.info("Successfully gave kudo to {}", activity);
     }
 }
