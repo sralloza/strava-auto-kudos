@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import mappers.ActivityBuilder;
 import models.Activity;
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -100,12 +99,12 @@ public class StravaRepository {
         waitPageLoads();
     }
 
-    protected void removeHeader() {
-        try {
-            ((JavascriptExecutor) driver).executeScript("document.getElementsByTagName(\"header\")[0].remove()");
-        } catch (JavascriptException e) {
-            log.warn("Failed to remove header", e);
-        }
+    private void removeHeader() {
+        driver.findElements(By.tagName("header")).forEach(this::removeElement);
+    }
+
+    private void removeElement(WebElement element) {
+        ((JavascriptExecutor) driver).executeScript("arguments[0].remove()", element);
     }
 
     private void waitPageLoads() {
@@ -159,5 +158,16 @@ public class StravaRepository {
         kudoButton.click();
         waitPageLoads();
         log.info("Successfully gave kudo to {}", activity);
+
+        removeKudosCommentsAndAchievementsModal();
+    }
+
+    private void removeKudosCommentsAndAchievementsModal() {
+        List<WebElement> elements = driver.findElements(config.getCssSelector("kudosCommentsAndAchievementsModal"));
+        log.debug("Found {} kudos modals", elements.size());
+        elements.forEach(this::removeElement);
+        if (elements.size() > 0) {
+            waitPageLoads();
+        }
     }
 }

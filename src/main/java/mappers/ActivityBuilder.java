@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import config.ConfigRepository;
 import lombok.extern.slf4j.Slf4j;
 import models.Activity;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import utils.NumberUtils;
 import utils.TimeUtils;
