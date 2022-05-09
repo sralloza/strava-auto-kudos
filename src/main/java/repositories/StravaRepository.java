@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import mappers.ActivityBuilder;
 import models.Activity;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -93,6 +94,14 @@ public class StravaRepository {
         waitPageLoads();
     }
 
+    protected void removeHeader() {
+        try {
+            ((JavascriptExecutor) driver).executeScript("document.getElementsByTagName(\"header\")[0].remove()");
+        } catch (JavascriptException e) {
+            log.warn("Failed to remove header", e);
+        }
+    }
+
     private void waitPageLoads() {
         new WebDriverWait(driver, Duration.ofSeconds(5)).until(
                 webDriver -> runJavascript("return document.readyState").equals("complete"));
@@ -117,7 +126,12 @@ public class StravaRepository {
                 .collect(Collectors.toList());
     }
 
-    public void giveKudo(Activity activity) {
+    public void giveKudos(List<Activity> activities) {
+        removeHeader();
+        activities.forEach(this::giveKudo);
+    }
+
+    private void giveKudo(Activity activity) {
         log.info("Giving kudo to {}", activity);
         if (config.getBoolean("strava.dryRun")) {
             log.info("dryRun is enabled, skipping kudo");
