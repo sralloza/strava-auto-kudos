@@ -2,6 +2,7 @@ package services;
 
 import com.google.inject.Inject;
 import config.ConfigRepository;
+import exceptions.NoActivitiesException;
 import lombok.extern.slf4j.Slf4j;
 import models.Activity;
 import repositories.StravaRepository;
@@ -28,6 +29,10 @@ public class StravaService {
 
             List<Activity> activities = stravaRepository.getActivities();
             log.info("Found {} activities", activities.size());
+
+            if (activities.isEmpty()) {
+                throw new NoActivitiesException();
+            }
 
             List<Activity> kudolessActivities = activities.stream()
                     .filter(this::filterByDistance)

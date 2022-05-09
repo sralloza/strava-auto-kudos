@@ -104,9 +104,11 @@ public class StravaRepository {
 
     public List<Activity> getActivities() {
         Integer feedSize = config.getInt("strava.feedSize");
-        if (feedSize != -1) {
+        if (feedSize > 0) {
             driver.get("https://www.strava.com/dashboard/following/" + feedSize);
+            waitPageLoads();
         }
+
         List<WebElement> activities = driver.findElements(config.getCssSelector("activity"));
         return activities.stream()
                 .map(activityBuilder::buildActivities)
