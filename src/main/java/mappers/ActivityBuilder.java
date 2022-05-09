@@ -104,8 +104,11 @@ public class ActivityBuilder {
     }
 
     private String buildDescription(WebElement webElement) {
-        return webElement.findElement(config.getCssSelector("description"))
-                .getText().strip();
+        return webElement.findElements(config.getCssSelector("description")).stream()
+                .findFirst()
+                .map(WebElement::getText)
+                .map(String::strip)
+                .orElse(null);
     }
 
     private Integer buildNKudos(WebElement webElement) {
@@ -119,10 +122,10 @@ public class ActivityBuilder {
 
     private boolean buildHasKudo(WebElement webElement) {
         var kudosBtn = getKudoButton(webElement);
-        var giveKudosTitle = config.getTitle("giveKudos");
+        var viewKudosTitle = config.getTitle("viewKudos");
         String kudosBtnTitle = kudosBtn.getAttribute("title");
-        boolean hasKudo = !giveKudosTitle.equalsIgnoreCase(kudosBtnTitle);
-        log.debug("Kudos button title: '{}', received '{}', result {}", giveKudosTitle, kudosBtnTitle, hasKudo);
+        boolean hasKudo = viewKudosTitle.equalsIgnoreCase(kudosBtnTitle);
+        log.debug("Kudos button title: '{}', received '{}', result {}", viewKudosTitle, kudosBtnTitle, hasKudo);
         return hasKudo;
     }
 

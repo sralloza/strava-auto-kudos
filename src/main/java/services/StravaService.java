@@ -55,7 +55,7 @@ public class StravaService {
             }
 
             log.info("Found {} kudoless activities", kudolessActivities.size());
-            kudolessActivities.forEach(stravaRepository::giveKudo);
+            stravaRepository.giveKudos(kudolessActivities);
 
             stravaRepository.logout();
         } catch (Exception exception) {

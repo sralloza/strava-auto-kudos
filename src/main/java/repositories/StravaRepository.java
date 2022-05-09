@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import mappers.ActivityBuilder;
 import models.Activity;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -68,6 +69,7 @@ public class StravaRepository {
 
     public void logout() {
         log.info("Logging out from Strava");
+        driver.navigate().refresh();
         List<WebElement> dropdownMenus = driver.findElements(config.getCssSelector("accountDropdown"));
         WebElement accountMenu = dropdownMenus.get(dropdownMenus.size() - 1);
         scrollToElement(accountMenu);
@@ -89,13 +91,33 @@ public class StravaRepository {
     }
 
     private void scrollToElement(WebElement element) {
-        runJavascript("arguments[0].scrollIntoView(true);", element);
+        String scrollElementIntoMiddle = "var viewPortHeight = Math.max(document.documentElement.clientHeight, " +
+                "window.innerHeight || 0);"
+                + "var elementTop = arguments[0].getBoundingClientRect().top;"
+                + "window.scrollBy(0, elementTop-(viewPortHeight/2));";
+
+        runJavascript(scrollElementIntoMiddle, element);
         waitPageLoads();
+    }
+
+    protected void removeHeader() {
+        try {
+            ((JavascriptExecutor) driver).executeScript("document.getElementsByTagName(\"header\")[0].remove()");
+        } catch (JavascriptException e) {
+            log.warn("Failed to remove header", e);
+        }
     }
 
     private void waitPageLoads() {
         new WebDriverWait(driver, Duration.ofSeconds(5)).until(
                 webDriver -> runJavascript("return document.readyState").equals("complete"));
+    }
+
+    private void simpleWaiter() {
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException ignored) {
+        }
     }
 
     private Object runJavascript(String script, Object... args) {
@@ -105,7 +127,9 @@ public class StravaRepository {
     public List<Activity> getActivities() {
         Integer feedSize = config.getInt("strava.feedSize");
         if (feedSize > 0) {
-            driver.get("https://www.strava.com/dashboard/following/" + feedSize);
+            String newUrl = "https://www.strava.com/dashboard/following/" + feedSize;
+            log.debug("Opening new url: {}", newUrl);
+            driver.get(newUrl);
             waitPageLoads();
         }
 
@@ -117,14 +141,23 @@ public class StravaRepository {
                 .collect(Collectors.toList());
     }
 
-    public void giveKudo(Activity activity) {
+    public void giveKudos(List<Activity> activities) {
+        removeHeader();
+        activities.forEach(this::giveKudo);
+    }
+
+    private void giveKudo(Activity activity) {
         log.info("Giving kudo to {}", activity);
         if (config.getBoolean("strava.dryRun")) {
             log.info("dryRun is enabled, skipping kudo");
             return;
         }
-        scrollToElement(activity.getKudoButton());
-        activity.getKudoButton().click();
+        WebElement kudoButton = activity.getKudoButton();
+        scrollToElement(kudoButton);
+        simpleWaiter();
+
+        kudoButton.click();
         waitPageLoads();
+        log.info("Successfully gave kudo to {}", activity);
     }
 }
