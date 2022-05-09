@@ -104,8 +104,11 @@ public class ActivityBuilder {
     }
 
     private String buildDescription(WebElement webElement) {
-        return webElement.findElement(config.getCssSelector("description"))
-                .getText().strip();
+        return webElement.findElements(config.getCssSelector("description")).stream()
+                .findFirst()
+                .map(WebElement::getText)
+                .map(String::strip)
+                .orElse(null);
     }
 
     private Integer buildNKudos(WebElement webElement) {
