@@ -1,26 +1,19 @@
-FROM ubuntu:20.04 AS base
-
-RUN apt-get update && \
-    apt-get install -y openjdk-11-jre-headless firefox-geckodriver && \
-    apt-get clean;
-
-FROM base as build
+FROM sralloza/openjdk:11-jre as build
 
 WORKDIR /home/gradle
 
-COPY src/ /home/gradle/src/
 COPY gradle/ /home/gradle/gradle/
 COPY build.gradle settings.gradle gradlew /home/gradle/
+COPY src/ /home/gradle/src/
 
 RUN ./gradlew build
 RUN ./gradlew test --scan
 RUN ./gradlew fat -i
 
-FROM base
+FROM sralloza/openjdk:11-jre
 
 RUN mkdir /app
 
 COPY --from=build /home/gradle/build/libs/*.jar /app/strava-auto-kudos.jar
-# COPY ./build/libs/*.jar /app/strava-auto-kudos.jar
 
 ENTRYPOINT [ "java", "-jar", "/app/strava-auto-kudos.jar" ]
