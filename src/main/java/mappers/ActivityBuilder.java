@@ -33,8 +33,7 @@ public class ActivityBuilder {
     public List<Activity> buildActivities(WebElement webElement) {
         log.debug("Finding nested abilities from element: {}", webElement.getText());
 
-        if (webElement.getText().toLowerCase().contains(config.getTitle("joinedChallenge").toLowerCase())) {
-            log.debug("Activity is a joined challenge event, skipping");
+        if (!isActivity(webElement)) {
             return Collections.emptyList();
         }
 
@@ -51,11 +50,24 @@ public class ActivityBuilder {
         return List.of(buildActivity(webElement));
     }
 
-    public Activity buildActivity(WebElement webElement) {
+    private boolean isActivity(WebElement webElement) {
+        var lowercaseText = webElement.getText().toLowerCase();
+        if (lowercaseText.contains(config.getTitle("joinedChallenge").toLowerCase())) {
+            log.debug("Activity is a joined challenge event, skipping");
+            return false;
+        }
+        if (lowercaseText.contains(config.getTitle("joinedClub").toLowerCase())) {
+            log.debug("Activity is a joined club event, skipping");
+            return false;
+        }
+        return true;
+    }
+
+    private Activity buildActivity(WebElement webElement) {
         return buildActivity(webElement, null);
     }
 
-    public Activity buildActivity(WebElement webElement, LocalDateTime datetime) {
+    private Activity buildActivity(WebElement webElement, LocalDateTime datetime) {
         log.debug("Building activity from element: {}", webElement.getText());
 
         datetime = Optional.ofNullable(datetime).orElse(buildDatetime(webElement));
