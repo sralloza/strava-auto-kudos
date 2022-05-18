@@ -60,6 +60,14 @@ public class ActivityBuilder {
             log.debug("Activity is a joined club event, skipping");
             return false;
         }
+
+        // An activity must have at least one username
+        int usernameElements = webElement.findElements(config.getCssSelector("username")).size();
+        if (usernameElements < 1) {
+            log.warn("Found section with {} username elements: {}", usernameElements, webElement.getAttribute("innerHTML"));
+            return false;
+        }
+
         return true;
     }
 
