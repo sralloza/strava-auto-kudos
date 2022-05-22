@@ -67,7 +67,6 @@ public class NumberUtils {
 
     public Double computeSpeed(Duration duration, Double distanceKm) {
         if (Stream.of(duration, distanceKm).anyMatch(Objects::isNull)) {
-            log.warn("Received null arg while computing speed (duration={}, distanceKm={})", duration, distanceKm);
             return null;
         }
         if (duration.getSeconds() == 0) {
@@ -76,9 +75,7 @@ public class NumberUtils {
         }
 
         double durationSeconds = (double) duration.getSeconds() / 3600;
-        System.out.println(durationSeconds);
         double result = distanceKm / durationSeconds;
-        System.out.println(result);
 
         return roundTwoDecimals(result);
     }

@@ -60,6 +60,10 @@ public class ActivityBuilder {
             log.debug("Activity is a joined club event, skipping");
             return false;
         }
+        if (webElement.findElements(config.getCssSelector("promo")).size() > 0) {
+            log.debug("Activity is a promo, skipping");
+            return false;
+        }
 
         // An activity must have at least one username
         int usernameElements = webElement.findElements(config.getCssSelector("username")).size();
@@ -82,16 +86,18 @@ public class ActivityBuilder {
         statsMap = getStatsMap(webElement);
         log.debug("Stats map: {}", statsMap);
 
-        Double defaultSpeed = numberUtils.computeSpeed(buildDuration(), buildDistance());
+        Duration duration = buildDuration();
+        Double distance = buildDistance();
+        Double defaultSpeed = numberUtils.computeSpeed(duration, distance);
 
         return new Activity()
                 .setUsername(buildUsername(webElement))
                 .setDatetime(datetime)
                 .setLocation(buildLocation(webElement))
                 .setDescription(buildDescription(webElement))
-                .setDistance(buildDistance())
+                .setDistance(distance)
                 .setElevationGain(buildElevationGain())
-                .setTime(buildDuration())
+                .setTime(duration)
                 .setCalories(buildCalories())
                 .setSpeed(buildSpeed(defaultSpeed))
                 .setHeartRate(buildHeartRate())

@@ -31,6 +31,7 @@ Configuration is managed by environment variables.
 - **STRAVA_CSS_SELECTOR_ACTIVITY**: the CSS selector for the activity. Defaults to `.react-feed-entry`.
 - **STRAVA_CSS_SELECTOR_GROUPED_ACTIVITY**: the CSS selector for a grouped activity. Defaults to `.GroupActivity--child-entry--0NEr-`.
 - **STRAVA_CSS_SELECTOR_KUDOS_COMMENTS_AND_ACHIEVEMENTS_MODAL**: the CSS selector for the kudos comments and achievements modal. Defaults to `.KudosCommentsAndAchievementsModal--body--4PTIc`.
+- **STRAVA_CSS_SELECTOR_PROMO**: the CSS selector for the promo section. Defaults to `div[data-testid='promo-img']`
 
 #### Titles
 
