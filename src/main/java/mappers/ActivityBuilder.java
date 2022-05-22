@@ -162,7 +162,7 @@ public class ActivityBuilder {
 
     private Double buildDistance() {
         return Optional.ofNullable(statsMap.getOrDefault(config.getTitle("distance"), null))
-                .map(numberUtils::parseDistance)
+                .map(numberUtils::parseDistanceKm)
                 .orElse(null);
     }
 
@@ -192,7 +192,7 @@ public class ActivityBuilder {
 
     private Double buildSpeed(Double defaultSpeed) {
         return Optional.ofNullable(statsMap.getOrDefault(config.getTitle("pace"), null))
-                .map(numberUtils::parseSpeed)
+                .map(numberUtils::paceToSpeed)
                 .orElse(defaultSpeed);
     }
 }

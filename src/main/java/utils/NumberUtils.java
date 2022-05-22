@@ -1,11 +1,13 @@
 package utils;
 
 import com.google.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.Duration;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+@Slf4j
 public class NumberUtils {
     private final TimeUtils timeUtils;
 
@@ -14,12 +16,20 @@ public class NumberUtils {
         this.timeUtils = timeUtils;
     }
 
-    public Double parseDistance(String distanceString) {
-        return Double.parseDouble(distanceString.replace("km", "")
-                .replace("m", "")
-                .replace(".", "")
+    public Double parseDistanceKm(String distanceString) {
+        double multiplier = 1;
+        if (distanceString.contains("km")) {
+            distanceString = distanceString.replace("km", "");
+        }
+        if (distanceString.contains("m")) {
+            distanceString = distanceString.replace("m", "")
+                    .replace(".", "")
+                    .replace(",", "");
+            multiplier = 0.001;
+        }
+        return Double.parseDouble(distanceString
                 .replace(",", ".")
-                .strip());
+                .strip()) * multiplier;
     }
 
     public Integer parsePositiveSlope(String slopeString) {
@@ -29,20 +39,11 @@ public class NumberUtils {
     }
 
     public Integer parseCalories(String s) {
-        return Integer.parseInt(s.replace("kcal", "").strip());
+        return Integer.parseInt(s.replace("kcal", "").replace("cal", "").strip());
     }
 
     public Integer parseHeartRate(String s) {
         return Integer.parseInt(s.replace("ppm", "").replace("bpm", "").strip());
-    }
-
-    public Double parseSpeed(String speed) {
-        return paceToSpeed(
-                speed.replace("km/h", "")
-                .replace("m/s", "")
-                .replace(".", "")
-                .replace(",", ".")
-                .strip());
     }
 
     public Double paceToSpeed(String pace) {
@@ -60,18 +61,29 @@ public class NumberUtils {
             throw new IllegalArgumentException("Unsupported pace format: " + pace);
         }
 
-
         Duration duration = timeUtils.parseDuration(pace.strip().replace(":", "m") + "s");
         return computeSpeed(duration, distanceKm);
     }
 
     public Double computeSpeed(Duration duration, Double distanceKm) {
         if (Stream.of(duration, distanceKm).anyMatch(Objects::isNull)) {
+            log.warn("Received null arg while computing speed (duration={}, distanceKm={})", duration, distanceKm);
             return null;
         }
-        double durationHours = (double) duration.getSeconds() / 3600;
-        double result = distanceKm / durationHours;
+        if (duration.getSeconds() == 0) {
+            log.warn("Received empty duration while computing speed (duration={}, distanceKm={})", duration, distanceKm);
+            return null;
+        }
 
-        return Math.round(result * 100) / 100.0;
+        double durationSeconds = (double) duration.getSeconds() / 3600;
+        System.out.println(durationSeconds);
+        double result = distanceKm / durationSeconds;
+        System.out.println(result);
+
+        return roundTwoDecimals(result);
+    }
+
+    public Double roundTwoDecimals(Double input) {
+        return Math.round(input * 100) / 100.0;
     }
 }
