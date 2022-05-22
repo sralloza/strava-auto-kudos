@@ -162,7 +162,7 @@ public class ActivityBuilder {
 
     private Double buildDistance() {
         return Optional.ofNullable(statsMap.getOrDefault(config.getTitle("distance"), null))
-                .map(numberUtils::parseDistance)
+                .map(numberUtils::parseDistanceKm)
                 .orElse(null);
     }
 

@@ -1,12 +1,14 @@
+package utils;
+
 import config.ConfigRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import utils.TimeProvider;
-import utils.TimeUtils;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -32,9 +34,21 @@ public class TimeUtilsTest {
         when(timeProvider.getYesterdayDate()).thenReturn(today.minusDays(1));
     }
 
+    @Test
+    public void shouldParseDuration() {
+        // Given
+        var expected = Duration.ofMinutes(77);
+
+        // When
+        var actual = timeUtils.parseDuration("1h 17m");
+
+        // Then
+        assertEquals(expected, actual);
+    }
+
     @ParameterizedTest(name = "{index} => dateTime={0}, expected={1}")
     @MethodSource("getSpanishDateTimeData")
-    public void testParseDateTime(LocalDateTime expected, String input) {
+    public void testSpanishParseDateTime(LocalDateTime expected, String input) {
         when(configRepository.getBoolean("general.spanishLocale")).thenReturn(true);
         LocalDateTime actual = timeUtils.parseDateTime(input);
         assertEquals(expected, actual);

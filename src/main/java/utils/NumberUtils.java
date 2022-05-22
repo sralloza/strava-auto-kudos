@@ -14,12 +14,20 @@ public class NumberUtils {
         this.timeUtils = timeUtils;
     }
 
-    public Double parseDistance(String distanceString) {
-        return Double.parseDouble(distanceString.replace("km", "")
-                .replace("m", "")
-                .replace(".", "")
+    public Double parseDistanceKm(String distanceString) {
+        double multiplier = 1;
+        if (distanceString.contains("km")) {
+            distanceString = distanceString.replace("km", "");
+        }
+        if (distanceString.contains("m")) {
+            distanceString = distanceString.replace("m", "")
+                    .replace(".", "")
+                    .replace(",", "");
+            multiplier = 0.001;
+        }
+        return Double.parseDouble(distanceString
                 .replace(",", ".")
-                .strip());
+                .strip()) * multiplier;
     }
 
     public Integer parsePositiveSlope(String slopeString) {
@@ -39,10 +47,10 @@ public class NumberUtils {
     public Double parseSpeed(String speed) {
         return paceToSpeed(
                 speed.replace("km/h", "")
-                .replace("m/s", "")
-                .replace(".", "")
-                .replace(",", ".")
-                .strip());
+                        .replace("m/s", "")
+                        .replace(".", "")
+                        .replace(",", ".")
+                        .strip());
     }
 
     public Double paceToSpeed(String pace) {
