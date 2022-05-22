@@ -2,7 +2,6 @@ package utils;
 
 import config.ConfigRepository;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
@@ -34,13 +33,21 @@ public class TimeUtilsTest {
         when(timeProvider.getYesterdayDate()).thenReturn(today.minusDays(1));
     }
 
-    @Test
-    public void shouldParseDuration() {
+    public static Object[] durationData() {
+        return new Object[][]{
+                {"1h 17m", 77},
+                {"1h17m", 77}
+        };
+    }
+
+    @ParameterizedTest(name = "{index} => input={0}, expected={1}")
+    @MethodSource("durationData")
+    public void shouldParseDuration(String input, Integer expectedMinutes) {
         // Given
-        var expected = Duration.ofMinutes(77);
+        var expected = Duration.ofMinutes(expectedMinutes);
 
         // When
-        var actual = timeUtils.parseDuration("1h 17m");
+        var actual = timeUtils.parseDuration(input);
 
         // Then
         assertEquals(expected, actual);
@@ -77,9 +84,9 @@ public class TimeUtilsTest {
         return new Object[][]{
                 {LocalDateTime.of(2022, 4, 21, 16, 21), "april 21, 2022 at 4:21 pm"},
                 {LocalDateTime.of(2022, 4, 16, 8, 36), "Yesterday 8:36 AM"},
-//                {LocalDateTime.of(2022, 4, 17, 17, 46), "Hoy a las 17:46"},
-//                {LocalDateTime.of(2022, 4, 16, 9, 12), "16 de abril de 2022 a las 9:12"},
-//                {LocalDateTime.of(2022, 4, 3, 9, 26), "3 de abril de 2022 a las 9:26"},
+                {LocalDateTime.of(2022, 4, 17, 17, 46), "Today at 5:46 PM"},
+                {LocalDateTime.of(2022, 4, 16, 9, 12), "april 16, 2022 at 9:12 am"},
+                {LocalDateTime.of(2022, 4, 3, 9, 26), "april 3, 2022 at 9:26 am"},
 
         };
     }

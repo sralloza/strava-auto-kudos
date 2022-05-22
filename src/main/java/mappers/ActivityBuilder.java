@@ -192,7 +192,7 @@ public class ActivityBuilder {
 
     private Double buildSpeed(Double defaultSpeed) {
         return Optional.ofNullable(statsMap.getOrDefault(config.getTitle("pace"), null))
-                .map(numberUtils::parseSpeed)
+                .map(numberUtils::paceToSpeed)
                 .orElse(defaultSpeed);
     }
 }

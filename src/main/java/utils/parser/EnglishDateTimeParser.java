@@ -38,7 +38,7 @@ public class EnglishDateTimeParser implements DateTimeParser {
             s = s.replace("yesterday", timeProvider.getYesterdayDate().format(dateFormatter));
         }
         if (s.contains("today")) {
-            s = s.replace("today", timeProvider.getYesterdayDate().format(dateFormatter));
+            s = s.replace("today", timeProvider.getTodayDate().format(dateFormatter));
         }
 
         s = titleCase(s);
