@@ -37,7 +37,7 @@ public class NumberUtils {
     }
 
     public Integer parseCalories(String s) {
-        return Integer.parseInt(s.replace("kcal", "").strip());
+        return Integer.parseInt(s.replace("kcal", "").replace("cal", "").strip());
     }
 
     public Integer parseHeartRate(String s) {
