@@ -16,6 +16,7 @@ public class EnglishDateTimeParser implements DateTimeParser {
     private String titleCase(String str) {
         return str.substring(0, 1).toUpperCase() + str.substring(1);
     }
+
     @Override
     public LocalDateTime parseDateTime(String s) {
         s = s.toLowerCase();

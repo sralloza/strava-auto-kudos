@@ -24,7 +24,7 @@ public class NumberUtilsTest {
     }
 
     public static Object[] distanceData() {
-        return new Object[][] {
+        return new Object[][]{
                 {"131,30 km", 131.3},
                 {"131.30 km", 131.3},
                 {"23.96 km", 23.96},
@@ -54,7 +54,7 @@ public class NumberUtilsTest {
     }
 
     public static Object[] positiveSlopeData() {
-        return new Object[][] {
+        return new Object[][]{
                 {"1.411 m", 1411},
                 {"1,411 m", 1411},
                 {"1.249 m", 1249},
@@ -79,7 +79,7 @@ public class NumberUtilsTest {
     }
 
     public static Object[] caloriesData() {
-        return new Object[][] {
+        return new Object[][]{
                 {"511 Kcal", 511},
                 {"511 Cal", 511},
                 {"238 kcal", 238},
@@ -102,7 +102,7 @@ public class NumberUtilsTest {
     }
 
     public static Object[] heartRateData() {
-        return new Object[][] {
+        return new Object[][]{
                 {"139 PPM", 139},
                 {"139 BPM", 139},
                 {"136 ppm", 136},
@@ -127,7 +127,7 @@ public class NumberUtilsTest {
     }
 
     public static Object[] paceData() {
-        return new Object[][] {
+        return new Object[][]{
                 {"6:20 /km", 9.47},
                 {"5:15 /km", 11.43},
                 {"5:08 /km", 11.69},
@@ -153,7 +153,7 @@ public class NumberUtilsTest {
 
 
     public static Object[] SpeedData() {
-        return new Object[][] {
+        return new Object[][]{
                 {380, 1.0, 9.47},
                 {314, 1.0, 11.46},
                 {308, 1.0, 11.69},

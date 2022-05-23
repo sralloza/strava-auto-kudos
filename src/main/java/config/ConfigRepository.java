@@ -39,7 +39,7 @@ public class ConfigRepository {
     }
 
     public String getTitle(String variable) {
-        if (config.getBoolean("general.spanishLocale")){
+        if (config.getBoolean("general.spanishLocale")) {
             return config.getString("strava.title.spanish." + variable);
         }
         return config.getString("strava.title.english." + variable);
