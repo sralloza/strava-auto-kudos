@@ -80,8 +80,8 @@ public class NumberUtilsTest {
 
     public static Object[] caloriesData() {
         return new Object[][] {
-                {"511 kcal", 511},
-                {"511 cal", 511},
+                {"511 Kcal", 511},
+                {"511 Cal", 511},
                 {"238 kcal", 238},
                 {"238 cal", 238},
                 {"60 kcal", 60},
@@ -103,8 +103,8 @@ public class NumberUtilsTest {
 
     public static Object[] heartRateData() {
         return new Object[][] {
-                {"139 ppm", 139},
-                {"139 bpm", 139},
+                {"139 PPM", 139},
+                {"139 BPM", 139},
                 {"136 ppm", 136},
                 {"136 bpm", 136},
                 {"118 ppm", 118},

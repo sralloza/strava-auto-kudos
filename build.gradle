@@ -20,7 +20,7 @@ test {
 }
 
 group 'es.sralloza'
-version '1.0.6'
+version '1.0.7'
 mainClassName = 'RunStrava'
 
 repositories {
