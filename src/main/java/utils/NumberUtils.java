@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.Duration;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -39,11 +40,11 @@ public class NumberUtils {
     }
 
     public Integer parseCalories(String s) {
-        return Integer.parseInt(s.replace("kcal", "").replace("cal", "").strip());
+        return Integer.parseInt(s.toLowerCase().replace("kcal", "").replace("cal", "").strip());
     }
 
     public Integer parseHeartRate(String s) {
-        return Integer.parseInt(s.replace("ppm", "").replace("bpm", "").strip());
+        return Integer.parseInt(s.toLowerCase().replace("ppm", "").replace("bpm", "").strip());
     }
 
     public Double paceToSpeed(String pace) {
