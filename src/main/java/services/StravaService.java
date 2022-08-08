@@ -67,6 +67,10 @@ public class StravaService {
     }
 
     private boolean filterByDistance(Activity activity) {
-        return Optional.ofNullable(activity.getDistance()).orElse(0.0) > config.getDouble("strava.minDistanceKM");
+        var minDistance = config.getDouble("strava.minDistanceKM");
+        if (minDistance == 0){
+            return true;
+        }
+        return Optional.ofNullable(activity.getDistance()).orElse(0.0) >= config.getDouble("strava.minDistanceKM");
     }
 }

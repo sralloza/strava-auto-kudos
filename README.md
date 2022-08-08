@@ -61,6 +61,6 @@ Configuration is managed by environment variables.
 - **STRAVA_FEED_SIZE**: the number of activities to be shown in the feed. Defaults to `0`, meaning the default. If set, 
   the feed will be open the url `/dashboard/following/$NUMBER` instead of the default `/dashboard`.
 - **DRY_RUN**: if set to `true`, the script will not actually send the kudo. Defaults to `false`.
-- **MIN_DISTANCE_KM**: the minimum distance in kilometers of each activity to consider giving the kudo. Defaults to `1`.
+- **MIN_DISTANCE_KM**: the minimum distance in kilometers of each activity to consider giving the kudo. Defaults to `0`, meaning the filter is disabled.
 - **HEADLESS**: if set to `true`, the script will open the browser in the background. Defaults to `true`.
 - **SPANISH_LOCALE**: if set to `true`, the script will use the spanish locale. Defaults to `false`.
