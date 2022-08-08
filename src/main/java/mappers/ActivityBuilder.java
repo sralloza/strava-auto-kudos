@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import config.ConfigRepository;
 import lombok.extern.slf4j.Slf4j;
 import models.Activity;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import utils.NumberUtils;
 import utils.TimeUtils;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 public class ActivityBuilder {
@@ -38,9 +40,14 @@ public class ActivityBuilder {
         }
 
         LocalDateTime datetime = buildDatetime(webElement);
+        String location = buildLocation(webElement);
         List<Activity> activities = webElement.findElements(config.getCssSelector("groupedActivity")).stream()
-                .map(w -> buildActivity(w, datetime))
-                .collect(Collectors.toList());
+            .findFirst()
+            .map(element -> element.findElements(By.xpath("./child::*")))
+            .orElse(Collections.emptyList())
+            .stream()
+            .map(w -> buildActivity(w, datetime, location))
+            .collect(Collectors.toList());
 
         if (!activities.isEmpty()) {
             return activities;
@@ -76,13 +83,15 @@ public class ActivityBuilder {
     }
 
     private Activity buildActivity(WebElement webElement) {
-        return buildActivity(webElement, null);
+        return buildActivity(webElement, null, null);
     }
 
-    private Activity buildActivity(WebElement webElement, LocalDateTime datetime) {
+    private Activity buildActivity(WebElement webElement, LocalDateTime datetime, String location) {
         log.debug("Building activity from element: {}", webElement.getText());
 
         datetime = Optional.ofNullable(datetime).orElse(buildDatetime(webElement));
+        location = Optional.ofNullable(location).orElse(buildLocation(webElement));
+
         statsMap = getStatsMap(webElement);
         log.debug("Stats map: {}", statsMap);
 
@@ -91,19 +100,19 @@ public class ActivityBuilder {
         Double defaultSpeed = numberUtils.computeSpeed(duration, distance);
 
         return new Activity()
-                .setUsername(buildUsername(webElement))
-                .setDatetime(datetime)
-                .setLocation(buildLocation(webElement))
-                .setDescription(buildDescription(webElement))
-                .setDistance(distance)
-                .setElevationGain(buildElevationGain())
-                .setTime(duration)
-                .setCalories(buildCalories())
-                .setSpeed(buildSpeed(defaultSpeed))
-                .setHeartRate(buildHeartRate())
-                .setNKudos(buildNKudos(webElement))
-                .setHasKudo(buildHasKudo(webElement))
-                .setKudoButton(getKudoButton(webElement));
+            .setUsername(buildUsername(webElement))
+            .setDatetime(datetime)
+            .setLocation(location)
+            .setDescription(buildDescription(webElement))
+            .setDistance(distance)
+            .setElevationGain(buildElevationGain())
+            .setTime(duration)
+            .setCalories(buildCalories())
+            .setSpeed(buildSpeed(defaultSpeed))
+            .setHeartRate(buildHeartRate())
+            .setNKudos(buildNKudos(webElement))
+            .setHasKudo(buildHasKudo(webElement))
+            .setKudoButton(getKudoButton(webElement));
     }
 
     private String buildUsername(WebElement webElement) {
@@ -112,33 +121,35 @@ public class ActivityBuilder {
 
     private LocalDateTime buildDatetime(WebElement webElement) {
         return webElement.findElements(config.getCssSelector("datetime")).stream()
-                .findFirst()
-                .map(WebElement::getText)
-                .map(timeUtils::parseDateTime)
-                .orElse(null);
+            .findFirst()
+            .map(WebElement::getText)
+            .map(timeUtils::parseDateTime)
+            .orElse(null);
     }
 
     private String buildLocation(WebElement webElement) {
-        return webElement.findElements(config.getCssSelector("location")).stream()
-                .findFirst()
-                .map(WebElement::getText)
-                .map(String::strip)
-                .map(s -> s.substring(1))
-                .map(String::strip)
-                .orElse(null);
+        return Stream.concat(
+                webElement.findElements(config.getCssSelector("locationGroupedActivty")).stream(),
+                webElement.findElements(config.getCssSelector("location")).stream())
+            .findFirst()
+            .map(WebElement::getText)
+            .map(String::strip)
+            .map(s -> s.substring(1))
+            .map(String::strip)
+            .orElse(null);
     }
 
     private String buildDescription(WebElement webElement) {
         return webElement.findElements(config.getCssSelector("description")).stream()
-                .findFirst()
-                .map(WebElement::getText)
-                .map(String::strip)
-                .orElse(null);
+            .findFirst()
+            .map(WebElement::getText)
+            .map(String::strip)
+            .orElse(null);
     }
 
     private Integer buildNKudos(WebElement webElement) {
         var kudosStr = webElement.findElement(config.getCssSelector("kudoCount"))
-                .getText().replace("kudos", "");
+            .getText().replace("kudos", "");
         if (kudosStr.contains(config.getTitle("noKudosMsg"))) {
             return 0;
         }
@@ -161,44 +172,44 @@ public class ActivityBuilder {
     private Map<String, String> getStatsMap(WebElement webElement) {
         var foo = webElement.findElements(config.getCssSelector("statsSection"));
         return foo.stream()
-                .map(webElement1 -> webElement1.getText().split("\n"))
-                .map(strings -> Map.entry(strings[0], strings[1]))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            .map(webElement1 -> webElement1.getText().split("\n"))
+            .map(strings -> Map.entry(strings[0], strings[1]))
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     private Double buildDistance() {
         return Optional.ofNullable(statsMap.getOrDefault(config.getTitle("distance"), null))
-                .map(numberUtils::parseDistanceKm)
-                .orElse(null);
+            .map(numberUtils::parseDistanceKm)
+            .orElse(null);
     }
 
     private Integer buildElevationGain() {
         return Optional.ofNullable(statsMap.getOrDefault(config.getTitle("elevationGain"), null))
-                .map(numberUtils::parsePositiveSlope)
-                .orElse(null);
+            .map(numberUtils::parsePositiveSlope)
+            .orElse(null);
     }
 
     private Duration buildDuration() {
         return Optional.ofNullable(statsMap.getOrDefault(config.getTitle("duration"), null))
-                .map(timeUtils::parseDuration)
-                .orElse(null);
+            .map(timeUtils::parseDuration)
+            .orElse(null);
     }
 
     private Integer buildCalories() {
         return Optional.ofNullable(statsMap.getOrDefault(config.getTitle("calories"), null))
-                .map(numberUtils::parseCalories)
-                .orElse(null);
+            .map(numberUtils::parseCalories)
+            .orElse(null);
     }
 
     private Integer buildHeartRate() {
         return Optional.ofNullable(statsMap.getOrDefault(config.getTitle("heartRate"), null))
-                .map(numberUtils::parseHeartRate)
-                .orElse(null);
+            .map(numberUtils::parseHeartRate)
+            .orElse(null);
     }
 
     private Double buildSpeed(Double defaultSpeed) {
         return Optional.ofNullable(statsMap.getOrDefault(config.getTitle("pace"), null))
-                .map(numberUtils::paceToSpeed)
-                .orElse(defaultSpeed);
+            .map(numberUtils::paceToSpeed)
+            .orElse(defaultSpeed);
     }
 }

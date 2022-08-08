@@ -22,6 +22,7 @@ Configuration is managed by environment variables.
 - **STRAVA_CSS_SELECTOR_USERNAME**: the CSS selector for the username field. Defaults to `a[data-testid='owners-name']`.
 - **STRAVA_CSS_SELECTOR_DATETIME**: the CSS selector for the datetime field. Defaults to `time[data-testid='date_at_time']`.
 - **STRAVA_CSS_SELECTOR_LOCATION**: the CSS selector for the location field. Defaults to `div[data-testid='location']`.
+- **STRAVA_CSS_SELECTOR_LOCATION_GROUPED_ACTIVITY**: the CSS selector for the location field in grouped activity. Defaults to `LocationAndTime--location--Djc4K`.
 - **STRAVA_CSS_SELECTOR_DESCRIPTION**: the CSS selector for the description field. Defaults to `a[data-testid='activity_name']`.
 - **STRAVA_CSS_SELECTOR_KUDOCOUNT**: the CSS selector for the kudo count field. Defaults to `div[data-testid='counts_wrapper']`.
 - **STRAVA_CSS_SELECTOR_KUDOBTN**: the CSS selector for the kudo button. Defaults to `button[data-testid='kudos_button']`.
